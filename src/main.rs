@@ -1,68 +1,32 @@
 use std::env;
-use std::fs;
+use std::fs::File;
+use std::io::{BufRead, BufReader};
 use std::process;
 
-#[derive(Debug)]
-struct Config {
-    query: String,
-    file_path: String,
-}
-
-impl Config {
-    fn build(mut args: impl Iterator<Item = String>) -> Result<Config, &'static str> {
-        args.next();
-
-        let query = match args.next() {
-            Some(arg) => arg,
-            None => {
-                return Err("No query in the arguments");
-            }
-        };
-
-        let file_path = match args.next() {
-            Some(arg) => arg,
-            None => {
-                return Err("No file path.");
-            }
-        };
-
-        Ok(Config { query, file_path })
-    }
-}
-
-#[derive(Debug)]
-struct Search<'a> {
-    config: &'a Config,
-    content: &'a str,
-    pub result: Vec<&'a str>,
-}
-
-impl<'a> Search<'a> {
-    pub fn new(config: &'a Config, content: &'a str) -> Self {
-        let result: Vec<&str> = content
-            .lines()
-            .filter(|line| line.contains(&config.query))
-            .collect();
-
-        Self {
-            config,
-            content,
-            result,
-        }
-    }
-}
+use minigrep::lexer::Lexer;
 
 fn main() {
-    let config = Config::build(env::args()).unwrap_or_else(|err| {
-        eprintln!("{err}");
+    let user_args: Vec<String> = env::args().collect();
+
+    // we skip the first element that represent the name of the binary
+    let _lexer = Lexer::new(&user_args[1..]);
+
+    // we never save into the heap we read line by line and clear the buffer so we have only one
+    // string represente the line and not all the file in memory
+    let file_path = "poem.txt";
+    let f = File::open(&file_path).unwrap_or_else(|err| {
+        eprintln!("Error opening the file : {err}");
         process::exit(1);
     });
 
-    let content = fs::read_to_string(&config.file_path).unwrap_or_else(|err| {
-        eprintln!("Error reading the file : {err}");
-        process::exit(1);
-    });
+    let mut reader = BufReader::new(f);
+    let mut line: String = String::new();
 
-    let search = Search::new(&config, &content);
-    dbg!(search);
+    let n_bytes = reader.read_line(&mut line).expect("error!");
+    println!("num bytes : {}\nLine: {}", n_bytes, line);
+    line.clear();
+
+    //
+    // let search = Search::new(&config, &content);
+    // println!("{:?}", search.result);
 }
