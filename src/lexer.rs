@@ -55,27 +55,6 @@ impl<'a> Iterator for Lexer<'a> {
     }
 }
 
-/*
-* 1. test_long_flag (Les options longues)
-   Ce qu'on teste : Passer ["--help"].
-   Ce qu'on attend : Obtenir Token::Long("help").
-* 2. test_short_flags_combined (Le test STAR de ta machine à états !)
-   Ce qu'on teste : Passer ["-in"].
-   Ce qu'on attend :
-   Premier .next() ➔ Token::Short('i')
-   Deuxième .next() ➔ Token::Short('n')
-   Troisième .next() ➔ None
-* 3. test_values (Les arguments normaux)
-   Ce qu'on teste : Passer ["needle", "file.txt"].
-   Ce qu'on attend : Obtenir Token::Value("needle") puis Token::Value("file.txt").
-* 4. test_edge_cases_dashes (Les cas limites du tiret)
-   Ce qu'on teste : Passer ["-", "--"].
-   Ce qu'on attend : Vérifier que ce sont bien des Token::Value et que le Lexer ne s'arrête pas par erreur.
-* 5. test_empty_args (L'entrée vide)
-   Ce qu'on teste : Passer une tranche vide &[].
-   Ce qu'on attend : Le premier appel à .next() renvoie directement None.
-*/
-
 #[cfg(test)]
 mod tests {
     use super::*;
