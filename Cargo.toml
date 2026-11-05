@@ -16,6 +16,10 @@ harness = false
 name = "parser_bench"
 harness = false
 
+[[bench]]
+name = "matcher_bench"
+harness = false
+
 
 
 
