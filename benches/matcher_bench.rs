@@ -12,6 +12,7 @@ pub fn bench_matcher(c: &mut Criterion) {
         file_path: "",
         ignore_case: false,
         line_numbers: false,
+        color: false,
     };
 
     let matcher_exact_hit = Matcher::from_config(&config_exact_hit);
@@ -21,6 +22,7 @@ pub fn bench_matcher(c: &mut Criterion) {
         file_path: "",
         ignore_case: true,
         line_numbers: false,
+        color: false,
     };
     let matcher_ci_hit = Matcher::from_config(&config_ci_hit);
 
@@ -30,6 +32,7 @@ pub fn bench_matcher(c: &mut Criterion) {
         file_path: "",
         ignore_case: false,
         line_numbers: false,
+        color: false,
     };
     let matcher_exact_miss = Matcher::from_config(&config_exact_miss);
 
@@ -38,6 +41,7 @@ pub fn bench_matcher(c: &mut Criterion) {
         file_path: "",
         ignore_case: true,
         line_numbers: false,
+        color: false,
     };
     let matcher_ci_miss = Matcher::from_config(&config_ci_miss);
 

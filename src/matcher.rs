@@ -1,10 +1,16 @@
 use crate::parser::Config;
 
-// Current bottleneck is the case-insensitive search algorithm:
+// WARN:Current bottleneck is the case-insensitive search algorithm:
 // We spend about 4 ms updating the cursor and yielding matches.
 // ripgrep use memchr2 to get the actual performance.
 // Check BENCHMARKS.md for more details.
 // TODO: Improve case-insensitive algorithm using memchr2.
+// WARN: By using ascii comparaison with 'eq_ignore_ascii_case' in CaseInsensitive option
+// i don't take into non-ASCII characters for example :
+// 'café' pattern dooesn't match 'CAFÉ' due to the multi bytes representation so
+// 'é' (0xC3 0xA9) != 'É' (0xC3 0x89).
+// Rust std avoid the huge unicode table to avoid massive lookup.
+// As i undersatand it !
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Match {
@@ -106,6 +112,7 @@ impl<'a, 'b> Iterator for Matches<'a, 'b> {
 
                     let slice = &line_bytes[i..slice_end];
 
+                    // does not match non-ASCII cases like 'é' vs 'É'
                     if slice.eq_ignore_ascii_case(pattern_bytes) {
                         self.cursor = slice_end;
                         return Some(Match {
@@ -126,7 +133,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn exact_match() {
+    fn test_exact_match() {
         let target = "Hello from the test, you are in the TeSt to tEsT the matcher";
 
         let config = Config {
@@ -134,6 +141,7 @@ mod tests {
             file_path: "",
             ignore_case: false,
             line_numbers: false,
+            color: false,
         };
 
         let matcher = Matcher::from_config(&config);
@@ -145,7 +153,7 @@ mod tests {
     }
 
     #[test]
-    fn case_insensitive_match() {
+    fn test_case_insensitive_match() {
         let target = "Hello from the test, you are in the TeSt to tEsT the matcher";
 
         let config = Config {
@@ -153,6 +161,7 @@ mod tests {
             file_path: "",
             ignore_case: true,
             line_numbers: false,
+            color: false,
         };
 
         let matcher = Matcher::from_config(&config);
@@ -166,13 +175,14 @@ mod tests {
     }
 
     #[test]
-    fn line_shorter_than_pattern() {
+    fn test_line_shorter_than_pattern() {
         let target = "hi";
         let config = Config {
             pattern: "hello_world",
             file_path: "",
             ignore_case: true,
             line_numbers: false,
+            color: false,
         };
 
         let matcher = Matcher::from_config(&config);
@@ -181,7 +191,7 @@ mod tests {
     }
 
     #[test]
-    fn empty_pattern() {
+    fn test_empty_pattern() {
         let target = "Hello from the test, you are in the TeSt to tEsT the matcher";
 
         let config = Config {
@@ -189,6 +199,7 @@ mod tests {
             file_path: "",
             ignore_case: true,
             line_numbers: false,
+            color: false,
         };
 
         let matcher = Matcher::from_config(&config);
@@ -202,13 +213,14 @@ mod tests {
         assert_eq!(results, true_results);
     }
     #[test]
-    fn empty_pattern_on_empty_line() {
+    fn test_empty_pattern_on_empty_line() {
         let target = "";
         let config = Config {
             pattern: "",
             file_path: "",
             ignore_case: false,
             line_numbers: false,
+            color: false,
         };
         let matcher = Matcher::from_config(&config);
         let results: Vec<_> = matcher.find_iter(target).collect();

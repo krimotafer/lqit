@@ -1,21 +1,24 @@
 use crate::lexer::{Lexer, Token};
 use std::fmt;
 
-const HELP: &'static str = "Usage: minigrep [OPTION]... PATTERN FILE
+const HELP: &str = "Usage: minigrep [OPTION]... PATTERN FILE
 Search for PATTERN in FILE.
 Example: minigrep -i 'hello world' menu.h main.c
 
 Pattern selection and interpretation:
   -i, --ignore-case     ignore case distinctions in patterns and data
   -n, --line-numbers    print line number with output lines
+  -c, --color           color the matches
+
 ";
 
 #[derive(Debug, PartialEq)]
 pub struct Config<'a> {
     pub pattern: &'a str,
     pub file_path: &'a str,
-    pub ignore_case: bool,  // -i
-    pub line_numbers: bool, // -n
+    pub ignore_case: bool,  // -i ignore-case
+    pub line_numbers: bool, // -n line-numbers
+    pub color: bool,        // -c
 }
 
 #[derive(Debug, PartialEq)]
@@ -35,6 +38,7 @@ impl<'a> Config<'a> {
 
         let mut ignore_case: bool = false;
         let mut line_numbers: bool = false;
+        let mut color: bool = false;
 
         for token in lexer {
             match token {
@@ -45,6 +49,10 @@ impl<'a> Config<'a> {
                 Token::Short('n') => {
                     line_numbers = true;
                 }
+                Token::Short('c') => {
+                    color = true;
+                }
+
                 Token::Short(short) => return Err(ParserError::UnknownShortOption(short)),
 
                 Token::Long("help") => return Err(ParserError::HelpRequest),
@@ -54,6 +62,10 @@ impl<'a> Config<'a> {
                 Token::Long("line-numbers") => {
                     line_numbers = true;
                 }
+                Token::Long("color") => {
+                    color = true;
+                }
+
                 Token::Long(long) => return Err(ParserError::UnknownLongOption(long)),
 
                 Token::Value(value) => match (pattern, file_path) {
@@ -69,6 +81,7 @@ impl<'a> Config<'a> {
             file_path: file_path.ok_or(ParserError::MissingFilePath)?,
             ignore_case,
             line_numbers,
+            color,
         })
     }
 }
@@ -99,7 +112,7 @@ mod tests {
     #[test]
     fn test_clean_input_short_options() {
         let flags = [
-            "-in".to_string(),
+            "-inc".to_string(),
             "pattern".to_string(),
             "file.txt".to_string(),
         ];
@@ -112,7 +125,8 @@ mod tests {
                 pattern: "pattern",
                 file_path: "file.txt",
                 ignore_case: true,
-                line_numbers: true
+                line_numbers: true,
+                color: true,
             }),
             config
         );
@@ -125,6 +139,7 @@ mod tests {
             "file.txt".to_string(),
             "--ignore-case".to_string(),
             "--line-numbers".to_string(),
+            "--color".to_string(),
         ];
 
         let lexer = Lexer::new(&flags);
@@ -135,7 +150,8 @@ mod tests {
                 pattern: "pattern",
                 file_path: "file.txt",
                 ignore_case: true,
-                line_numbers: true
+                line_numbers: true,
+                color: true,
             }),
             config
         );
@@ -253,7 +269,8 @@ mod tests {
                 pattern: "pattern",
                 file_path: "file.txt",
                 ignore_case: true,
-                line_numbers: true
+                line_numbers: true,
+                color: false,
             }),
             config
         );

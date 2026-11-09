@@ -20,6 +20,8 @@ harness = false
 name = "matcher_bench"
 harness = false
 
-
+[[bench]]
+name = "printer_bench"
+harness = false
 
 
