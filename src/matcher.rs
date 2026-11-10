@@ -4,13 +4,15 @@ use crate::parser::Config;
 // We spend about 4 ms updating the cursor and yielding matches.
 // ripgrep use memchr2 to get the actual performance.
 // Check BENCHMARKS.md for more details.
-// TODO: Improve case-insensitive algorithm using memchr2.
+
 // WARN: By using ascii comparaison with 'eq_ignore_ascii_case' in CaseInsensitive option
 // i don't take into non-ASCII characters for example :
 // 'café' pattern dooesn't match 'CAFÉ' due to the multi bytes representation so
 // 'é' (0xC3 0xA9) != 'É' (0xC3 0x89).
 // Rust std avoid the huge unicode table to avoid massive lookup.
 // As i undersatand it !
+
+// TODO: Improve case-insensitive algorithm using memchr2.
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Match {
