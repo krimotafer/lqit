@@ -24,4 +24,9 @@ harness = false
 name = "printer_bench"
 harness = false
 
+[[bench]]
+name = "searcher_bench"
+harness = false
+
+
 
