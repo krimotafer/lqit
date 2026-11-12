@@ -31,7 +31,7 @@ pub fn bench_searcher(c: &mut Criterion) {
             // BufReader
             let mut reader = BufReader::new(black_box(text.as_bytes()));
             let mut writer = sink();
-            black_box(searcher_realistic.search(&mut reader, &mut writer).unwrap());
+            searcher_realistic.search(&mut reader, &mut writer).unwrap();
         });
     });
 
@@ -49,7 +49,7 @@ pub fn bench_searcher(c: &mut Criterion) {
         b.iter(|| {
             let mut reader = BufReader::new(black_box(text.as_bytes()));
             let mut writer = sink();
-            black_box(searcher_dense.search(&mut reader, &mut writer).unwrap());
+            searcher_dense.search(&mut reader, &mut writer).unwrap();
         });
     });
 
@@ -67,7 +67,7 @@ pub fn bench_searcher(c: &mut Criterion) {
         b.iter(|| {
             let mut reader = BufReader::new(black_box(text.as_bytes()));
             let mut writer = sink();
-            black_box(searcher_miss.search(&mut reader, &mut writer).unwrap());
+            searcher_miss.search(&mut reader, &mut writer).unwrap();
         });
     });
 

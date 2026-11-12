@@ -100,10 +100,7 @@ impl<'a, 'b> Iterator for Matches<'a, 'b> {
                 let line_bytes = self.line.as_bytes();
                 let pattern_bytes = pattern.as_bytes();
 
-                let max_cursor_start = match line_bytes.len().checked_sub(pattern_bytes.len()) {
-                    Some(max) => max,
-                    None => return None,
-                };
+                let max_cursor_start = line_bytes.len().checked_sub(pattern_bytes.len())?;
 
                 if self.cursor > line_bytes.len() {
                     return None;

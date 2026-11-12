@@ -38,7 +38,7 @@ impl<'a> Iterator for Lexer<'a> {
 
         let arg = self.args.next()?;
 
-        let token = match arg.as_str() {
+        match arg.as_str() {
             "-" => Some(Token::Value(arg)),
             "--" => Some(Token::Value(arg)),
             arg if arg.starts_with("--") => Some(Token::Long(&arg[2..])),
@@ -49,9 +49,7 @@ impl<'a> Iterator for Lexer<'a> {
                 Some(Token::Short(first_char))
             }
             _ => Some(Token::Value(arg)),
-        };
-
-        token
+        }
     }
 }
 

@@ -26,8 +26,8 @@ pub struct Searcher<'a> {
 
 impl<'a> Searcher<'a> {
     pub fn from_config(config: &'a Config) -> Self {
-        let matcher = Matcher::from_config(&config);
-        let printer = Printer::from_config(&config);
+        let matcher = Matcher::from_config(config);
+        let printer = Printer::from_config(config);
 
         Self { matcher, printer }
     }
