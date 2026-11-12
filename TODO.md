@@ -4,7 +4,7 @@ My backlog. What is done is in the commits and the code comments.
 
 ## Lexer (`src/lexer.rs`)
 
-- [ ] `--` must stop the options: everything after it is a value. Today `minigrep -- -v file` fails with `unknown option '-v'`, so I can't search a pattern that starts with `-`. My test `test_edge_cases_dashes` expects `--` as a value, I need to change it too.
+- [ ] `--` must stop the options: everything after it is a value. Today `lqit -- -v file` fails with `unknown option '-v'`, so I can't search a pattern that starts with `-`. My test `test_edge_cases_dashes` expects `--` as a value, I need to change it too.
 - [ ] `env::args_os()` instead of `env::args()`: `args()` panics if an argument is not valid UTF-8 (a file path on Linux can be anything).
 - [ ] `--option=value` with `split_once('=')`.
 - [ ] Attached short values (`-n5`, `-fpattern`).
@@ -12,7 +12,7 @@ My backlog. What is done is in the commits and the code comments.
 
 ## Parser (`src/parser.rs`)
 
-- [ ] stdin: `file_path: Option<&str>`, and `-` means stdin (`cat file.txt | minigrep pattern`). `Searcher::search` is already generic on `BufRead`, so it should be easy.
+- [ ] stdin: `file_path: Option<&str>`, and `-` means stdin (`cat file.txt | lqit pattern`). `Searcher::search` is already generic on `BufRead`, so it should be easy.
 - [ ] Tests for the `Display` of each `ParserError`.
 
 ## Matcher (`src/matcher.rs`)
@@ -32,7 +32,7 @@ My backlog. What is done is in the commits and the code comments.
 - [ ] Without `-c` I don't need all the matches, only to know if there is one (`.next().is_some()`). Today I collect all of them for nothing.
 - [ ] A non-UTF-8 file stops everything: `read_line` returns `stream did not contain valid UTF-8`. Moving to bytes fixes this, and it's also my bottleneck (see `BENCHMARKS.md`).
 - [ ] Call `writer.flush()` at the end: when `BufWriter` is dropped, a flush error is ignored.
-- [ ] Different messages for read errors and write errors (today both are `minigrep: <file>: ...`).
+- [ ] Different messages for read errors and write errors (today both are `lqit: <file>: ...`).
 - [ ] Several files.
 
 ## Performance (bigger steps)

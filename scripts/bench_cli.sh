@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# End-to-end benchmarks with hyperfine: minigrep vs GNU grep vs ripgrep.
+# End-to-end benchmarks with hyperfine: lqit vs GNU grep vs ripgrep.
 # Run it from the project root: ./scripts/bench_cli.sh
 set -euo pipefail
 
@@ -12,7 +12,7 @@ OUT="target/benchmarks"
 mkdir -p "$OUT"
 
 cargo build --release --quiet
-MINIGREP="./target/release/minigrep"
+LQIT="./target/release/lqit"
 
 # WARN: '--output=pipe' is important. By default hyperfine sends the output to /dev/null,
 # GNU grep detects that and stops at the first match (like -q). So grep looks much faster
@@ -22,7 +22,7 @@ MINIGREP="./target/release/minigrep"
 bench() {
     local name=$1
     local args=$2
-    local cmds=("$MINIGREP $args $CORPUS" "grep $args $CORPUS")
+    local cmds=("$LQIT $args $CORPUS" "grep $args $CORPUS")
     if command -v rg >/dev/null; then
         cmds+=("rg $args $CORPUS")
     fi

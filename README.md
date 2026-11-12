@@ -1,4 +1,6 @@
-# minigrep
+# lqit
+
+**lqit** (لقيت, /lqiːt/, say "l-qeet") means *"I found it!"* in North African Darja.
 
 A small `grep` in Rust, only with the standard library. For learning purposes.
 
@@ -21,7 +23,7 @@ What I decided:
 ## Usage
 
 ```
-minigrep [OPTION]... PATTERN FILE
+lqit [OPTION]... PATTERN FILE
 
   -i, --ignore-case     ignore case distinctions in patterns and data
   -n, --line-numbers    print line number with output lines
@@ -70,7 +72,7 @@ The short version of my comments and commits:
 
 Shakespeare complete works (5.64 MB, 196k lines), Intel Core Ultra 7 155H, full CLI with hyperfine:
 
-| Search | minigrep | GNU grep | ripgrep |
+| Search | lqit | GNU grep | ripgrep |
 | :--- | ---: | ---: | ---: |
 | `Hamlet` | 16.4 ms | 5.9 ms | 3.1 ms |
 | `the` (39k lines) | 20.1 ms | 11.4 ms | 7.6 ms |

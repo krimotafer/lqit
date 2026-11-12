@@ -25,9 +25,9 @@ cargo bench --bench matcher_bench  # only one
 `scripts/bench_cli.sh`: 5 warmup runs, 50 runs, no shell (`-N`), output sent to a pipe (`--output=pipe`). Measured on 2026-11-12. All three tools print exactly the same lines for each scenario (I checked with `wc -l`).
 
 > **WARN: my first version of this table was wrong.**
-> hyperfine sends the output to `/dev/null` by default, and GNU grep detects `/dev/null` and stops at the first match (like `-q`). So grep looked 11x to 19x faster than minigrep on the scenarios with matches, but it was not doing the same work. I checked it with `strace`: grep does 7 `read` calls when the output is `/dev/null` and 65 when it is a pipe. Now the script uses `--output=pipe`, so every tool writes all the lines.
+> hyperfine sends the output to `/dev/null` by default, and GNU grep detects `/dev/null` and stops at the first match (like `-q`). So grep looked 11x to 19x faster than lqit on the scenarios with matches, but it was not doing the same work. I checked it with `strace`: grep does 7 `read` calls when the output is `/dev/null` and 65 when it is a pipe. Now the script uses `--output=pipe`, so every tool writes all the lines.
 
-| Scenario | Matching lines | minigrep | GNU grep | ripgrep |
+| Scenario | Matching lines | lqit | GNU grep | ripgrep |
 | :--- | ---: | ---: | ---: | ---: |
 | `Hamlet` (few matches) | 105 | 16.4 ± 1.5 ms | 5.9 ± 0.9 ms | 3.1 ± 0.5 ms |
 | `the` (a lot of matches) | 39,634 | 20.1 ± 1.3 ms | 11.4 ± 1.3 ms | 7.6 ± 1.0 ms |
@@ -36,7 +36,7 @@ cargo bench --bench matcher_bench  # only one
 
 User time (my code) vs system time (kernel):
 
-| Scenario | minigrep user / sys | GNU grep user / sys | ripgrep user / sys |
+| Scenario | lqit user / sys | GNU grep user / sys | ripgrep user / sys |
 | :--- | :---: | :---: | :---: |
 | `Hamlet` | 15.2 / 1.1 ms | 4.6 / 1.2 ms | 1.5 / 1.5 ms |
 | `the` | 18.6 / 1.4 ms | 9.9 / 1.4 ms | 5.9 / 1.6 ms |
@@ -46,7 +46,7 @@ User time (my code) vs system time (kernel):
 What I see:
 
 - System time is ~1 ms for the three tools. So the kernel side (read the file, write the output) is not my problem: `BufReader`, one `stdout().lock()` and `BufWriter` do their job.
-- My problem is in user space. Even when nothing matches, minigrep needs ~13 ms of CPU, grep needs 0.4 ms. The no-match scenario is the honest "floor": ~10x slower than grep.
+- My problem is in user space. Even when nothing matches, lqit needs ~13 ms of CPU, grep needs 0.4 ms. The no-match scenario is the honest "floor": ~10x slower than grep.
 - `-i` costs me ~4 ms (20.4 vs 16.4 ms), this is my naive byte loop in `Matcher::CaseInsensitive`.
 
 ---

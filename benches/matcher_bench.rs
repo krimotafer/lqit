@@ -1,6 +1,6 @@
 use criterion::{Criterion, Throughput, black_box, criterion_group, criterion_main};
-use minigrep::matcher::Matcher;
-use minigrep::parser::Config;
+use lqit::matcher::Matcher;
+use lqit::parser::Config;
 
 pub fn bench_matcher(c: &mut Criterion) {
     let text = include_str!("../data/pg100.txt");

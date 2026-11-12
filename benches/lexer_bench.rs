@@ -1,5 +1,5 @@
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
-use minigrep::lexer::Lexer;
+use lqit::lexer::Lexer;
 
 pub fn bench_lexer(c: &mut Criterion) {
     let flags = [

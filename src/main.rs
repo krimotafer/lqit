@@ -2,9 +2,9 @@ use std::env;
 use std::io::{BufWriter, ErrorKind, stdout};
 use std::process;
 
-use minigrep::lexer::Lexer;
-use minigrep::parser::{Config, ParserError};
-use minigrep::searcher::Searcher;
+use lqit::lexer::Lexer;
+use lqit::parser::{Config, ParserError};
+use lqit::searcher::Searcher;
 
 fn main() {
     let user_args: Vec<String> = env::args().collect();
@@ -18,7 +18,7 @@ fn main() {
             process::exit(0);
         }
         _ => {
-            eprint!("minigrep: {err}");
+            eprint!("lqit: {err}");
             process::exit(1);
         }
     });
@@ -32,7 +32,7 @@ fn main() {
         if err.kind() == ErrorKind::BrokenPipe {
             process::exit(0);
         }
-        eprintln!("minigrep: {}: {err}", config.file_path);
+        eprintln!("lqit: {}: {err}", config.file_path);
         process::exit(1);
     }
 }

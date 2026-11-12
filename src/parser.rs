@@ -1,9 +1,9 @@
 use crate::lexer::{Lexer, Token};
 use std::fmt;
 
-const HELP: &str = "Usage: minigrep [OPTION]... PATTERN FILE
+const HELP: &str = "Usage: lqit [OPTION]... PATTERN FILE
 Search for PATTERN in FILE.
-Example: minigrep -i 'hello world' main.c
+Example: lqit -i 'hello world' main.c
 
 Pattern selection and interpretation:
   -i, --ignore-case     ignore case distinctions in patterns and data

@@ -1,6 +1,6 @@
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
-use minigrep::lexer::Lexer;
-use minigrep::parser::Config;
+use lqit::lexer::Lexer;
+use lqit::parser::Config;
 
 pub fn bench_parser(c: &mut Criterion) {
     let flags = [

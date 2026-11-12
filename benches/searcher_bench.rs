@@ -1,6 +1,6 @@
 use criterion::{Criterion, Throughput, black_box, criterion_group, criterion_main};
-use minigrep::parser::Config;
-use minigrep::searcher::Searcher;
+use lqit::parser::Config;
+use lqit::searcher::Searcher;
 use std::io::BufReader;
 
 pub fn bench_searcher(c: &mut Criterion) {
