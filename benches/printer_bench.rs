@@ -2,7 +2,6 @@ use criterion::{Criterion, Throughput, black_box, criterion_group, criterion_mai
 use minigrep::matcher::{Match, Matcher};
 use minigrep::parser::Config;
 use minigrep::printer::Printer;
-use std::io::sink;
 
 pub fn bench_printer(c: &mut Criterion) {
     let text = include_str!("../data/pg100.txt");
@@ -66,50 +65,61 @@ pub fn bench_printer(c: &mut Criterion) {
         color: true,
     });
 
+    // WARN: we don't write into `io::sink()` anymore. The compiler can see that sink does
+    // nothing, so it deletes the printer work and the bench measures only the loop.
+    // We write into a Vec<u8> allocated once here, cleared at each iteration (the capacity stays,
+    // so no allocation in the timed part) and we `black_box` it at the end so the output must exist.
+    // Writing into a Vec is a memory copy, close to what BufWriter does in main.
+    let mut writer: Vec<u8> = Vec::with_capacity(8 * 1024 * 1024);
+
     let mut group = c.benchmark_group("printer");
     group.throughput(Throughput::Bytes(total_bytes));
 
     group.bench_function("raw", |b| {
         b.iter(|| {
-            let mut writer = sink();
+            writer.clear();
             for (line, matches, line_num) in &lines_data {
                 printer_raw
                     .print_line(&mut writer, black_box(line), black_box(matches), *line_num)
                     .unwrap();
             }
+            black_box(&writer);
         });
     });
 
     group.bench_function("line_numbers", |b| {
         b.iter(|| {
-            let mut writer = sink();
+            writer.clear();
             for (line, matches, line_num) in &lines_data {
                 printer_n
                     .print_line(&mut writer, black_box(line), black_box(matches), *line_num)
                     .unwrap();
             }
+            black_box(&writer);
         });
     });
 
     group.bench_function("color", |b| {
         b.iter(|| {
-            let mut writer = sink();
+            writer.clear();
             for (line, matches, line_num) in &lines_data {
                 printer_c
                     .print_line(&mut writer, black_box(line), black_box(matches), *line_num)
                     .unwrap();
             }
+            black_box(&writer);
         });
     });
 
     group.bench_function("all_flags", |b| {
         b.iter(|| {
-            let mut writer = sink();
+            writer.clear();
             for (line, matches, line_num) in &lines_data {
                 printer_all
                     .print_line(&mut writer, black_box(line), black_box(matches), *line_num)
                     .unwrap();
             }
+            black_box(&writer);
         });
     });
 

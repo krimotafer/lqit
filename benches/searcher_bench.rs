@@ -1,7 +1,7 @@
 use criterion::{Criterion, Throughput, black_box, criterion_group, criterion_main};
 use minigrep::parser::Config;
 use minigrep::searcher::Searcher;
-use std::io::{BufReader, sink};
+use std::io::BufReader;
 
 pub fn bench_searcher(c: &mut Criterion) {
     let text = include_str!("../data/pg100.txt");
@@ -15,6 +15,10 @@ pub fn bench_searcher(c: &mut Criterion) {
 
     let mut group = c.benchmark_group("searcher");
     group.throughput(Throughput::Bytes(file_bytes));
+
+    // WARN: same as printer_bench, we write into a reused Vec<u8> instead of `io::sink()`,
+    // otherwise the compiler can delete the printer work because sink does nothing.
+    let mut writer: Vec<u8> = Vec::with_capacity(8 * 1024 * 1024);
 
     // 1. Realistic / Sparse Hit
     let config_realistic = Config {
@@ -30,8 +34,9 @@ pub fn bench_searcher(c: &mut Criterion) {
         b.iter(|| {
             // BufReader
             let mut reader = BufReader::new(black_box(text.as_bytes()));
-            let mut writer = sink();
+            writer.clear();
             searcher_realistic.search(&mut reader, &mut writer).unwrap();
+            black_box(&writer);
         });
     });
 
@@ -48,8 +53,9 @@ pub fn bench_searcher(c: &mut Criterion) {
     group.bench_function("dense_stress_hit", |b| {
         b.iter(|| {
             let mut reader = BufReader::new(black_box(text.as_bytes()));
-            let mut writer = sink();
+            writer.clear();
             searcher_dense.search(&mut reader, &mut writer).unwrap();
+            black_box(&writer);
         });
     });
 
@@ -66,8 +72,9 @@ pub fn bench_searcher(c: &mut Criterion) {
     group.bench_function("pure_miss_scan", |b| {
         b.iter(|| {
             let mut reader = BufReader::new(black_box(text.as_bytes()));
-            let mut writer = sink();
+            writer.clear();
             searcher_miss.search(&mut reader, &mut writer).unwrap();
+            black_box(&writer);
         });
     });
 
