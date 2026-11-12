@@ -1,6 +1,6 @@
 # minigrep
 
-A small `grep` in Rust, only with the standard library. I build it to learn.
+A small `grep` in Rust, only with the standard library. For learning purposes.
 
 > [!IMPORTANT]
 > **This is a learning project.** I use it to learn Rust and software engineering: design patterns, trade-offs, zero-copy, measuring performance. It's not a competitor to [ripgrep](https://github.com/BurntSushi/ripgrep) or [GNU grep](https://www.gnu.org/software/grep/), and that's not the goal. It's slower than both (numbers below), and that's OK.
@@ -10,14 +10,13 @@ A small `grep` in Rust, only with the standard library. I build it to learn.
 
 ## Why
 
-The Rust book has a chapter where you build a mini grep, and it recommends reading the [ripgrep](https://github.com/BurntSushi/ripgrep) code from BurntSushi. I did the book version first in "blind mode", without looking at the book's code. Then I wanted to go deeper: what is behind the scene, where are the limits, which trade-offs we have to make. And of course train my brain on design patterns and zero-copy Rust.
+Try to deep dive into the first Rust Book project, to understand system design and learn more about trade-offs.
 
-My rules:
+What I decided:
 
 - **No external crate, only the std.** I want to understand the fundamentals and the limits of the std before using `memchr` or `memmap2`. (Criterion is only a dev-dependency for the benches.)
 - **Zero-copy when I can**: borrow (`&str`) instead of clone.
 - **Measure before I believe**: Criterion for each component, hyperfine for the full CLI.
-- **Write my thoughts down**: in code comments (look for `WARN:` and `TODO:`) and in commit messages. This README is the short version.
 
 ## Usage
 
@@ -61,11 +60,11 @@ The short version of my comments and commits:
 - **`eq_ignore_ascii_case` is ASCII only.** `café` doesn't match `CAFÉ` because `é` is `0xC3 0xA9` and `É` is `0xC3 0x89`. The std avoids shipping the big Unicode table for that, as I understand it.
 - **Bytes avoid UTF-8 bugs.** In `CaseInsensitive` I compare bytes, so I never cut a `&str` in the middle of a char.
 - **The empty pattern matches everything.** Zero-width match at every position, the ε case of formal language theory.
-- **`write!` vs `write_all`.** `write!` goes through `core::fmt`. With `write_all` on bytes my printer is 1.8x faster with colors.
+- **`write!` vs `write_all`.** `write!` goes through `core::fmt`. With `write_all` on bytes my printer is 1.9x to 2.7x faster (2.5x with colors).
 - **Slice vs iterator.** The printer takes a small slice of matches instead of the matcher's iterator. Simpler, and it's a standard trade-off. If one day I need to look ahead without consuming, `peekable` exists.
 - **Kernel time is not my problem.** One lock on stdout + `BufWriter` → ~1 ms of system time, same as ripgrep.
 - **My bottleneck is not the search.** It's reading line by line into a `String` (UTF-8 check on each of the 196k lines). That's why grep and ripgrep work on raw bytes.
-- **Benchmarking is tricky.** My first comparison with grep was wrong: when the output goes to `/dev/null`, GNU grep stops at the first match. Details in [BENCHMARKS.md](BENCHMARKS.md).
+- **Benchmarking is tricky.** My first comparison with grep was wrong: when the output goes to `/dev/null`, GNU grep stops at the first match. My first printer bench was wrong too: it wrote into `io::sink()`, and the compiler deleted the work because sink does nothing. Details in [BENCHMARKS.md](BENCHMARKS.md).
 
 ## Benchmarks (short)
 
@@ -73,10 +72,10 @@ Shakespeare complete works (5.64 MB, 196k lines), Intel Core Ultra 7 155H, full 
 
 | Search | minigrep | GNU grep | ripgrep |
 | :--- | ---: | ---: | ---: |
-| `Hamlet` | 15.8 ms | 5.5 ms | 2.7 ms |
-| `the` (39k lines) | 19.3 ms | 11.3 ms | 7.3 ms |
-| `-in Hamlet` | 19.9 ms | 10.8 ms | 4.1 ms |
-| no match | 14.9 ms | 1.7 ms | 2.8 ms |
+| `Hamlet` | 16.4 ms | 5.9 ms | 3.1 ms |
+| `the` (39k lines) | 20.1 ms | 11.4 ms | 7.6 ms |
+| `-in Hamlet` | 20.4 ms | 11.9 ms | 4.5 ms |
+| no match | 14.5 ms | 1.4 ms | 2.6 ms |
 
 Yes it's slower, see the disclaimer :) All the numbers, Criterion per component, and what I understand from them: [BENCHMARKS.md](BENCHMARKS.md).
 
@@ -84,9 +83,9 @@ Yes it's slower, see the disclaimer :) All the numbers, Criterion per component,
 
 - One file only, no stdin.
 - Can't search a pattern that starts with `-`.
-- A non-UTF-8 file stops the search with an error, this why `memchar` is matter to play directly with bytes and avoid UTF-8 checking.
+- A non-UTF-8 file stops the search with an error, this is why `memchr` matters: to play directly with bytes and avoid UTF-8 checking.
 - `-i` is ASCII only.
-- Exit code is 0 even when nothing matches (grep returns 1).
+- Exit code is 0 even when nothing matches (exit codes like grep: 0 = match, 1 = no match, 2 = error).
 
 All of them are in [TODO.md](TODO.md).
 
