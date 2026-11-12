@@ -101,3 +101,7 @@ cargo bench
 ## About me
 
 I'm doing a PhD in another field, Rust is my side quest, so this project grows slowly (PhD life, don't judge please :) ).
+
+## License
+
+My code is under the [MIT license](LICENSE). The dataset `data/pg100.txt` comes from Project Gutenberg and keeps its own license: [data/pg100-LICENSE.txt](data/pg100-LICENSE.txt).
