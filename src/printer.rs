@@ -57,7 +57,7 @@ impl Printer {
         Ok(())
     }
 
-    // As i know this is a pipeline pattern: prefix -> body -> suffix
+    // As i know this is a composed method pattern: prefix -> body -> suffix
     fn prefix<W: Write>(&self, writer: &mut W, line_number: usize) -> Result<()> {
         if self.line_numbers {
             // we use a buffer of 20 octs to get the standard max size for a usize +1 for the colone

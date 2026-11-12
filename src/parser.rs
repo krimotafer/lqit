@@ -3,7 +3,7 @@ use std::fmt;
 
 const HELP: &str = "Usage: minigrep [OPTION]... PATTERN FILE
 Search for PATTERN in FILE.
-Example: minigrep -i 'hello world' menu.h main.c
+Example: minigrep -i 'hello world' main.c
 
 Pattern selection and interpretation:
   -i, --ignore-case     ignore case distinctions in patterns and data

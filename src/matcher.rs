@@ -66,7 +66,7 @@ impl<'a, 'b> Matches<'a, 'b> {
     }
 }
 
-// Itertor pattern: Lazy and zero-copy
+// Iterator pattern: Lazy and zero-copy
 impl<'a, 'b> Iterator for Matches<'a, 'b> {
     type Item = Match;
 

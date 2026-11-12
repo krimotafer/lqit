@@ -17,7 +17,7 @@ use std::io::{BufRead, BufReader, Result, Write};
 // standard tradeoff! and if we want we can use 'peackable' iterator to check the future without
 // consume the item of the iterator, it's really good to now!
 
-//Mediator pattern: Searcher handle matcher and printer
+//Facade pattern: Searcher handle matcher and printer
 #[derive(Debug)]
 pub struct Searcher<'a> {
     pub matcher: Matcher<'a>,
